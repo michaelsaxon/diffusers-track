@@ -494,9 +494,8 @@ def main(args):
         print(inspect.getsource(cls.__getitem__))
 
         def __getitem__(self, key):
-            out = self._getitem(key)
             print(key)
-            return out
+            return self._getitem(key)
 
         cls.__getitem__ = __getitem__
         
