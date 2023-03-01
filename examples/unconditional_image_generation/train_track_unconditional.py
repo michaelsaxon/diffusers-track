@@ -6,6 +6,8 @@ import os
 from pathlib import Path
 from typing import Optional
 
+import inspect
+
 import accelerate
 import datasets
 import torch
@@ -488,6 +490,8 @@ def main(args):
         Modifies the given Dataset class to return a tuple data, target, index
         instead of just data, target.
         """
+
+        print(inspect.getsource(cls.__getitem__))
 
         def __getitem__(self, idx):
             data, target = cls.__getitem__(self, idx)
