@@ -28,6 +28,11 @@ from diffusers.training_utils import EMAModel
 from diffusers.utils import check_min_version, is_accelerate_version, is_tensorboard_available, is_wandb_available
 
 
+# need to manually implement a dataset that tracks the number of each element
+
+
+
+
 # Will error if the minimal version of diffusers is not installed. Remove at your own risks.
 check_min_version("0.14.0.dev0")
 
@@ -565,6 +570,8 @@ def main(args):
                 continue
 
             clean_images = batch["input"]
+            print(batch)
+            print(dir(batch))
             # Sample noise that we'll add to the images
             noise = torch.randn(clean_images.shape).to(clean_images.device)
             bsz = clean_images.shape[0]
