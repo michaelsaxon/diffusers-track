@@ -493,11 +493,9 @@ def main(args):
             data, target = cls.__getitem__(self, idx)
             return data, target, idx
 
-        print(type(cls))
-
-        return type(cls.__class__.__name__, (cls,), {
-            '__getitem__': __getitem__,
-        })
+        cls.__getitem__ = __getitem__
+        
+        return cls
 
 
     dataset.set_transform(transform_images)
