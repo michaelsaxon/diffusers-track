@@ -489,6 +489,8 @@ def main(args):
         instead of just data, target.
         """
 
+        print(dir(cls))
+
         def __getitem__(self, idx):
             data, target = cls.__getitem__(self, idx)
             return data, target, idx
