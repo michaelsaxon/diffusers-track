@@ -484,27 +484,10 @@ def main(args):
 
     logger.info(f"Dataset size: {len(dataset)}")
 
-    # From https://discuss.pytorch.org/t/how-to-retrieve-the-sample-indices-of-a-mini-batch/7948/21
-    def dataset_with_indices(cls):
-        """
-        Modifies the given Dataset class to return a tuple data, target, index
-        instead of just data, target.
-        """
-
-        print(inspect.getsource(cls.__getitem__))
-
-        def __getitem__(self, key):
-            print(key)
-            return self._getitem(key)
-
-        cls.__getitem__ = __getitem__
-        
-        return cls
-
 
     dataset.set_transform(transform_images)
     train_dataloader = torch.utils.data.DataLoader(
-        dataset_with_indices(dataset), batch_size=args.train_batch_size, shuffle=True, num_workers=args.dataloader_num_workers
+        dataset, batch_size=args.train_batch_size, shuffle=True, num_workers=args.dataloader_num_workers
     )
 
     # Initialize the learning rate scheduler
