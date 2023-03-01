@@ -489,11 +489,11 @@ def main(args):
         instead of just data, target.
         """
 
-        print(dir(cls))
-
         def __getitem__(self, idx):
             data, target = cls.__getitem__(self, idx)
             return data, target, idx
+
+        print(type(cls))
 
         return type(cls.__class__.__name__, (cls,), {
             '__getitem__': __getitem__,
