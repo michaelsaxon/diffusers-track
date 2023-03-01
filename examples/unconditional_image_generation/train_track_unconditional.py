@@ -495,7 +495,7 @@ def main(args):
             data, target = cls.__getitem__(self, idx)
             return data, target, idx
 
-        return type("Dataset", (cls,), {
+        return type(cls.__name__, (cls,), {
             '__getitem__': __getitem__,
         })
 
