@@ -570,7 +570,7 @@ def main(args):
                 continue
 
             clean_images = batch["input"]
-            print(batch.keys())
+            print(batch.items)
             print(dir(batch))
             # Sample noise that we'll add to the images
             noise = torch.randn(clean_images.shape).to(clean_images.device)
