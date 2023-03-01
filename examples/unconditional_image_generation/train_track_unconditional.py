@@ -493,9 +493,10 @@ def main(args):
 
         print(inspect.getsource(cls.__getitem__))
 
-        def __getitem__(self, idx):
-            data, target = cls.__getitem__(self, idx)
-            return data, target, idx
+        def __getitem__(self, key):
+            out = self._getitem(key)
+            print(key)
+            return out
 
         cls.__getitem__ = __getitem__
         
