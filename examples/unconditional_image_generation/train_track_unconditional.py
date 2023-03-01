@@ -475,18 +475,32 @@ def main(args):
         ]
     )
 
-    def transform_images_track_id(examples):
+    def transform_images(examples):
         images = [augmentations(image.convert("RGB")) for image in examples["image"]]
-        # # # # # # # # # # # # # # # # # # TEST # # # # # # # # # # # # # # # # # #
-        print(examples)
-        ids = [id for id in examples["id"]]
-        return {"input": images, "ids" : ids}
+        
+        return {"input": images}
 
     logger.info(f"Dataset size: {len(dataset)}")
 
-    dataset.set_transform(transform_images_track_id)
+    # From https://discuss.pytorch.org/t/how-to-retrieve-the-sample-indices-of-a-mini-batch/7948/21
+    def dataset_with_indices(cls):
+        """
+        Modifies the given Dataset class to return a tuple data, target, index
+        instead of just data, target.
+        """
+
+        def __getitem__(self, idx):
+            data, target = cls.__getitem__(self, idx)
+            return data, target, idx
+
+        return type(cls.__name__, (cls,), {
+            '__getitem__': __getitem__,
+        })
+
+
+    dataset.set_transform(transform_images)
     train_dataloader = torch.utils.data.DataLoader(
-        dataset, batch_size=args.train_batch_size, shuffle=True, num_workers=args.dataloader_num_workers
+        dataset_with_indices(dataset), batch_size=args.train_batch_size, shuffle=True, num_workers=args.dataloader_num_workers
     )
 
     # Initialize the learning rate scheduler
