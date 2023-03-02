@@ -484,7 +484,7 @@ def main(args):
 
     def transform_images(examples):
         images = [augmentations(image.convert("RGB")) for image in examples["image"]]
-        print(examples)
+        print(examples.shape)
         return {"input": images}
 
     logger.info(f"Dataset size: {len(dataset)}")
