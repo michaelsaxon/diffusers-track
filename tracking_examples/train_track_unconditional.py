@@ -30,7 +30,7 @@ from diffusers.utils import check_min_version, is_accelerate_version, is_tensorb
 
 # need to manually implement a dataset that tracks the number of each element
 
-
+from memmapdatasets import CelebADataset
 
 
 # Will error if the minimal version of diffusers is not installed. Remove at your own risks.
@@ -454,43 +454,12 @@ def main(args):
         eps=args.adam_epsilon,
     )
 
-    # Get the datasets: you can either provide your own training and evaluation files (see below)
-    # or specify a Dataset from the hub (the dataset will be downloaded automatically from the datasets Hub).
-
-    # In distributed training, the load_dataset function guarantees that only one local process can concurrently
-    # download the dataset.
-    if args.dataset_name is not None:
-        dataset = load_dataset(
-            args.dataset_name,
-            args.dataset_config_name,
-            cache_dir=args.cache_dir,
-            split="train",
-        )
-    else:
-        dataset = load_dataset("imagefolder", data_dir=args.train_data_dir, cache_dir=args.cache_dir, split="train")
-        # See more about loading custom images at
-        # https://huggingface.co/docs/datasets/v2.4.0/en/image_load#imagefolder
-
-    # Preprocessing the datasets and DataLoaders creation.
-    augmentations = transforms.Compose(
-        [
-            transforms.Resize(args.resolution, interpolation=transforms.InterpolationMode.BILINEAR),
-            transforms.CenterCrop(args.resolution) if args.center_crop else transforms.RandomCrop(args.resolution),
-            transforms.RandomHorizontalFlip() if args.random_flip else transforms.Lambda(lambda x: x),
-            transforms.ToTensor(),
-            transforms.Normalize([0.5], [0.5]),
-        ]
-    )
-
-    def transform_images(examples):
-        images = [augmentations(image.convert("RGB")) for image in examples["image"]]
-        
-        return {"input": images}
+    # # # # # # # # # # 
+    dataset = CelebADataset()
 
     logger.info(f"Dataset size: {len(dataset)}")
 
 
-    dataset.set_transform(transform_images)
     train_dataloader = torch.utils.data.DataLoader(
         dataset, batch_size=args.train_batch_size, shuffle=True, num_workers=args.dataloader_num_workers
     )
@@ -570,8 +539,8 @@ def main(args):
                 continue
 
             clean_images = batch["input"]
-            print(batch.items())
-            print(dir(batch))
+            
+            
             # Sample noise that we'll add to the images
             noise = torch.randn(clean_images.shape).to(clean_images.device)
             bsz = clean_images.shape[0]
