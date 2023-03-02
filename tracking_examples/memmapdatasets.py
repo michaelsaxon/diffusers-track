@@ -24,7 +24,7 @@ def generate_augmentations(resolution = 256, random_flip = False, center_crop = 
 
 class CelebADataset(Dataset):
     def __init__(self, path = "/mnt/sshd/saxon/CelebA/", extension = "jpg", augmentations = generate_augmentations()):
-        imgpath = pathlib.path(path) / "img_align_celeba/"
+        imgpath = pathlib.Path(path) / "img_align_celeba/"
         self.imglist = list(filter(lambda x : x.suffix == f".{extension}", imgpath.iterdir()))
         self.len = len(self.imglist)
         self.augmentations = augmentations
