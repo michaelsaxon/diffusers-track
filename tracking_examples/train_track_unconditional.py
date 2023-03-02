@@ -597,6 +597,8 @@ def main(args):
                 logs["ema_decay"] = ema_model.cur_decay_value
             progress_bar.set_postfix(**logs)
             accelerator.log(logs, step=global_step)
+
+            break
         progress_bar.close()
 
         accelerator.wait_for_everyone()
