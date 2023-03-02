@@ -484,7 +484,7 @@ def main(args):
 
     def transform_images(examples):
         images = [augmentations(image.convert("RGB")) for image in examples["image"]]
-        print(examples["image"][0]["input"])
+        print(examples)
         return {"input": images}
 
     logger.info(f"Dataset size: {len(dataset)}")
@@ -570,8 +570,6 @@ def main(args):
                 continue
 
             clean_images = batch["input"]
-            print(batch.items())
-            print(dir(batch))
             # Sample noise that we'll add to the images
             noise = torch.randn(clean_images.shape).to(clean_images.device)
             bsz = clean_images.shape[0]
