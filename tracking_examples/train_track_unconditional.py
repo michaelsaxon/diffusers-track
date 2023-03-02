@@ -455,7 +455,7 @@ def main(args):
     )
 
     # # # # # # # # # # 
-    dataset = CelebADataset()
+    dataset = CelebADataset(augmentations={"resolution" : args.resolution})
 
     logger.info(f"Dataset size: {len(dataset)}")
 

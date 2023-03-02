@@ -11,7 +11,8 @@ import pathlib
 # image is a width x height tensor
 # implement as a dataloader
 
-def generate_augmentations(resolution = 256, random_flip = False, center_crop = True):
+def generate_augmentations(arguments = {"resolution" : 256, "random_flip" : False, "center_crop" : True}):
+    resolution, random_flip, center_crop = arguments["resolution"], arguments["random_flip"], arguments["center_crop"]
     return transforms.Compose(
         [
             transforms.Resize(resolution, interpolation=transforms.InterpolationMode.BILINEAR),
@@ -23,11 +24,15 @@ def generate_augmentations(resolution = 256, random_flip = False, center_crop = 
     )
 
 class CelebADataset(Dataset):
-    def __init__(self, path = "/mnt/sshd/saxon/CelebA/", extension = "jpg", augmentations = generate_augmentations()):
+    def __init__(self, path = "/mnt/sshd/saxon/CelebA/", extension = "jpg", augmentations = {}):
         imgpath = pathlib.Path(path) / "img_align_celeba/"
         self.imglist = list(filter(lambda x : x.suffix == f".{extension}", imgpath.iterdir()))
         self.len = len(self.imglist)
-        self.augmentations = augmentations
+        default_vals = {"resolution" : 256, "random_flip" : False, "center_crop" : True}
+        for key in default_vals.keys():
+            if key not in augmentations.keys():
+                augmentations[key] = default_vals[key]
+        self.augmentations = generate_augmentations(augmentations)
     
     def __getitem__(self, idx):
         image_PIL = Image.open(self.imglist[idx])
