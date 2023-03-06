@@ -545,6 +545,7 @@ def main(args):
             save_indices = []
             for idx in range(indices.shape[0]):
                 if indices[idx] in track_samples:
+                    print(indices[idx])
                     save_indices.append((idx, indices[idx]))
             
             # Sample noise that we'll add to the images
