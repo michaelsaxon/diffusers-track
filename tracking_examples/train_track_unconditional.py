@@ -313,7 +313,7 @@ def main(args):
     )
 
     track_log_dir = args.track_log_dir
-    track_samples = map(lambda x: int(x.strip()), open(args.track_samples_file, "r").readlines())
+    track_samples = list(map(lambda x: int(x.strip()), open(args.track_samples_file, "r").readlines()))
 
     if args.logger == "tensorboard":
         if not is_tensorboard_available():
