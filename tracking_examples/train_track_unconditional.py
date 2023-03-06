@@ -1,3 +1,10 @@
+"""
+accelerate launch tracking_examples/train_track_unconditional.py   --resolution=64     \
+--train_batch_size=48   --num_epochs=250  --save_model_epochs=50 --gradient_accumulation_steps=1   --learning_rate=1e-5   --lr_warmup_steps=500   --mixed_precision=no --logger=wandb \
+--output_dir="/mnt/sshd/saxon/celebhq_uncond_notrack-1" 
+
+"""
+
 import argparse
 import inspect
 import logging
@@ -305,6 +312,9 @@ def main(args):
         project_config=accelerator_project_config,
     )
 
+    track_log_dir = args.track_log_dir
+    track_samples = map(lambda x: int(x.strip()), open(args.track_samples_file, "r").readlines())
+
     if args.logger == "tensorboard":
         if not is_tensorboard_available():
             raise ImportError("Make sure to install tensorboard if you want to use it for logging during training.")
@@ -512,6 +522,11 @@ def main(args):
             first_epoch = global_step // num_update_steps_per_epoch
             resume_step = resume_global_step % (num_update_steps_per_epoch * args.gradient_accumulation_steps)
 
+
+    # prepare the tracker log dir
+    os.makedirs(track_log_dir, exist_ok=True)
+
+
     # Train!
     for epoch in range(first_epoch, args.num_epochs):
         model.train()
@@ -526,6 +541,11 @@ def main(args):
 
             clean_images = batch["input"]
             
+            indices = batch["index"]
+            save_indices = []
+            for idx in range(indices.shape[0]):
+                if indices[idx] in track_samples:
+                    save_indices.append((idx, indices[idx]))
             
             # Sample noise that we'll add to the images
             noise = torch.randn(clean_images.shape).to(clean_images.device)
@@ -538,6 +558,15 @@ def main(args):
             # Add noise to the clean images according to the noise magnitude at each timestep
             # (this is the forward diffusion process)
             noisy_images = noise_scheduler.add_noise(clean_images, noise, timesteps)
+
+            # we have produced the noise and noisey images associated with the track samples
+            for idx, dsidx in save_indices:
+                base_path = Path(track_log_dir) / f"{epoch}-{dsidx}"
+                os.makedirs(base_path, exist_ok=True)
+                # save the noise, the noised image, the associated timestamp
+                torch.save(noise[idx].squeeze(), base_path / "noise.pt")
+                torch.save(noisy_images[idx].squeeze(), base_path / "noisy_image.pt")
+                torch.save(timesteps[idx].squeeze(), base_path / "timestamp.pt")
 
             with accelerator.accumulate(model):
                 # Predict the noise residual
