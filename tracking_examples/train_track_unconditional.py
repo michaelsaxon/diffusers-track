@@ -544,7 +544,7 @@ def main(args):
             indices = batch["index"]
             save_indices = []
             for idx in range(indices.shape[0]):
-                print(indices[idx])
+                print(indices[idx].item)
                 if indices[idx] in track_samples:
                     save_indices.append((idx, indices[idx]))
             
