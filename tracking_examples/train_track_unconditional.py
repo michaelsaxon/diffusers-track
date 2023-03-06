@@ -1,7 +1,7 @@
 """
 accelerate launch tracking_examples/train_track_unconditional.py   --resolution=64     \
 --train_batch_size=48   --num_epochs=250  --save_model_epochs=50 --gradient_accumulation_steps=1   --learning_rate=1e-5   --lr_warmup_steps=500   --mixed_precision=no --logger=wandb \
---output_dir="/mnt/sshd/saxon/celebhq_uncond_notrack-1" 
+--output_dir="/mnt/sshd/saxon/celebhq_uncond_track-1" --save_images_epochs=2 --track_log_dir="/mnt/sshd/saxon/celebhq_uncond_track-1-noise" --track_samples_file="/home/saxon/save_images.csv"
 
 """
 
@@ -545,9 +545,9 @@ def main(args):
             save_indices = []
             for idx in range(indices.shape[0]):
                 dsidx = int(indices[idx].item())
-                print(dsidx)
-                if indices[idx] in track_samples:
+                if dsidx in track_samples:
                     save_indices.append((idx, indices[idx]))
+                    logger.info(f"Save index {dsidx} at element {idx} in this batch.")
             
             # Sample noise that we'll add to the images
             noise = torch.randn(clean_images.shape).to(clean_images.device)
@@ -569,6 +569,7 @@ def main(args):
                 torch.save(noise[idx].squeeze(), base_path / "noise.pt")
                 torch.save(noisy_images[idx].squeeze(), base_path / "noisy_image.pt")
                 torch.save(timesteps[idx].squeeze(), base_path / "timestamp.pt")
+                logger.info(f"Saved noise for {dsidx} sucessfully.")
 
             with accelerator.accumulate(model):
                 # Predict the noise residual
