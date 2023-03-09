@@ -1,7 +1,7 @@
 """
 accelerate launch tracking_examples/train_track_unconditional.py   --resolution=64     \
---train_batch_size=48   --num_epochs=250  --save_model_epochs=50 --gradient_accumulation_steps=1   --learning_rate=1e-5   --lr_warmup_steps=500   --mixed_precision=no --logger=wandb \
---output_dir="/mnt/sshd/saxon/celebhq_uncond_track-1" --save_images_epochs=2 --track_log_dir="/mnt/sshd/saxon/celebhq_uncond_track-1-noise" --track_samples_file="/home/saxon/save_images.csv"
+--train_batch_size=48   --num_epochs=100  --save_model_epochs=50 --gradient_accumulation_steps=1   --learning_rate=8e-5   --lr_warmup_steps=1000   --mixed_precision=no --logger=wandb \
+--output_dir="/mnt/bhd/saxon/celebhq_uncond_track-1" --save_images_epochs=2 --track_log_dir="/mnt/sshd/saxon/celebhq_uncond_track-1-noise" --track_samples_file="/home/saxon/save_images.csv"
 
 """
 
@@ -279,6 +279,14 @@ def parse_args():
             "ADDED FLAG. File which lists the samples in the dataset we will track."
         ),
     )
+    parser.add_argument(
+        "--randomize_augmentations",
+        type=bool,
+        help=(
+            "ADDED FLAG. Will we randomize the crop and rotation of images in celebA each time."
+        ),
+        action='store_true'
+    )
 
 
     args = parser.parse_args()
@@ -452,7 +460,12 @@ def main(args):
     )
 
     # # # # # # # # # # 
-    dataset = CelebADataset(augmentations={"resolution" : args.resolution})
+    augmentations={"resolution" : args.resolution}
+    if args.randomize_augmentations:
+        augmentations["random_flip"] = True
+        augmentations["center_crop"] = False
+    dataset = CelebADataset(augmentations=augmentations)
+
 
     logger.info(f"Dataset size: {len(dataset)}")
 
