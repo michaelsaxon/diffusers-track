@@ -281,7 +281,6 @@ def parse_args():
     )
     parser.add_argument(
         "--randomize_augmentations",
-        type=bool,
         help=(
             "ADDED FLAG. Will we randomize the crop and rotation of images in celebA each time."
         ),
