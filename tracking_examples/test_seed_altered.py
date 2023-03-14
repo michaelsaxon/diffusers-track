@@ -538,6 +538,9 @@ def main(args):
     # prepare the tracker log dir
     os.makedirs(track_log_dir, exist_ok=True)
 
+    print("test")
+
+
     if accelerator.is_main_process:
         unet = accelerator.unwrap_model(model)
         if args.use_ema:
