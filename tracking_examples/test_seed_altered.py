@@ -34,6 +34,7 @@ from diffusers.optimization import get_scheduler
 from diffusers.training_utils import EMAModel
 from diffusers.utils import check_min_version, is_accelerate_version, is_tensorboard_available, is_wandb_available
 
+from randomized_ddpm_pipeline import DDPMPipeline_seedreset
 
 # need to manually implement a dataset that tracks the number of each element
 
@@ -540,8 +541,12 @@ def main(args):
         unet = accelerator.unwrap_model(model)
         if args.use_ema:
             ema_model.copy_to(unet.parameters())
-        pipeline = DDPMPipeline(
-            unet=unet,
+        #pipeline = DDPMPipeline(
+        #    unet=unet,
+        #    scheduler=noise_scheduler,
+        #)
+        pipeline = DDPMPipeline_seedreset(
+            unet = unet,
             scheduler=noise_scheduler,
         )
 
