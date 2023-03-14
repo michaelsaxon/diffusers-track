@@ -4,8 +4,8 @@ from typing import List, Optional, Tuple, Union
 
 import torch
 
-from ...utils import randn_tensor
-from ..pipeline_utils import DiffusionPipeline, ImagePipelineOutput
+from diffusers.utils import randn_tensor
+from diffusers.pipelines.pipeline_utils import DiffusionPipeline, ImagePipelineOutput
 
 
 class DDPMPipeline_seedreset(DiffusionPipeline):
