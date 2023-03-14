@@ -287,6 +287,14 @@ def parse_args():
         ),
         action='store_true'
     )
+    parser.add_argument(
+        "--reset_generator_t",
+        type=int,
+        default=0,
+        help=(
+            "ADDED FLAG. What timestep in the forward process to reset the random state for DDPM."
+        ),
+    )
 
 
     args = parser.parse_args()
@@ -548,6 +556,7 @@ def main(args):
         pipeline = DDPMPipeline_seedreset(
             unet = unet,
             scheduler=noise_scheduler,
+            reset_generator_step=args.reset_generator_t,
         )
 
         generator = torch.Generator(device=pipeline.device).manual_seed(0)
