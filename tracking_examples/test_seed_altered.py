@@ -556,7 +556,6 @@ def main(args):
         pipeline = DDPMPipeline_seedreset(
             unet = unet,
             scheduler=noise_scheduler,
-            reset_generator_step=args.reset_generator_t,
         )
 
         generator = torch.Generator(device=pipeline.device).manual_seed(0)
@@ -566,6 +565,7 @@ def main(args):
             batch_size=args.eval_batch_size,
             num_inference_steps=args.ddpm_num_inference_steps,
             output_type="numpy",
+            reset_generator_step=args.reset_generator_t,
         ).images
 
         # denormalize the images and save to tensorboard
