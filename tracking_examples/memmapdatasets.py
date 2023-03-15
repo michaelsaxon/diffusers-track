@@ -34,12 +34,12 @@ class CelebADataset(Dataset):
                 augmentations[key] = default_vals[key]
         self.augmentations = generate_augmentations(augmentations)
         # labels contains one-hot coded attributes, can be converted into 
-        self.labels = list(map(
+        """self.labels = list(map(
             lambda x: list(map(
                 lambda y: max(0, int(y)), x.strip().split(" ")[1:]
             )), 
             open(basepath / "list_attr_celeba.txt").readlines()[1:]
-        ))
+        ))"""
         self.indices = list(range(len(self.imglist)))
         if len(ignore_rows) > 0:
             for ignore_row in ignore_rows:
@@ -51,7 +51,8 @@ class CelebADataset(Dataset):
         idx = self.indices[idx]
         image_PIL = Image.open(self.imglist[idx])
         image_tensor = self.augmentations(image_PIL.convert("RGB"))
-        return {"index" : idx, "input" : image_tensor, "label" : torch.tensor(self.labels[idx])}
+        return {"index" : idx, "input" : image_tensor} 
+        #"label" : torch.tensor(self.labels[idx])}
 
     def __len__(self):
         return self.len
