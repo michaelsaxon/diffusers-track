@@ -286,14 +286,6 @@ def parse_args():
         ),
         action='store_true'
     )
-    parser.add_argument(
-        "--remove_indices_file",
-        type=str,
-        default=None,
-        help=(
-            "ADDED FLAG. A file listing indices in the training set that we want to filter during training."
-        ),
-    )
 
 
     args = parser.parse_args()
@@ -467,14 +459,11 @@ def main(args):
     )
 
     # # # # # # # # # # 
-    if args.remove_indices_file is not None:
-        remove_indices = list(map(lambda x: int(x.strip()), open(args.remove_indices_file, "r").readlines()))
-
     augmentations={"resolution" : args.resolution}
     if args.randomize_augmentations:
         augmentations["random_flip"] = True
         augmentations["center_crop"] = False
-    dataset = CelebADataset(augmentations=augmentations, ignore_rows=remove_indices)
+    dataset = CelebADataset(augmentations=augmentations)
 
 
     logger.info(f"Dataset size: {len(dataset)}")
